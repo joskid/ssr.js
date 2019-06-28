@@ -116,9 +116,9 @@ const PunkForm = new class {
 
 class Model {
 
-    constructor(name, methods) {
+    constructor(modelName, methods) {
 
-        this.name = name;
+        this.modelName = modelName;
 
         for (let method in methods)
             this[method] = methods[method];
@@ -132,7 +132,7 @@ class Model {
                 obj[prop] = value;
                 for (let element of obj.elements[prop] || [])
                     element.innerHTML = value;
-                Punk.draw(obj.name + '.' + prop)
+                Punk.draw(obj.modelName + '.' + prop)
                 return true;
             }
         });
@@ -141,7 +141,7 @@ class Model {
 
     init() {
 
-        this.element = document.querySelector('[data-model="' + this.name + '"]');
+        this.element = document.querySelector('[data-model="' + this.modelName + '"]');
 
         this.elements = {};
 
@@ -149,8 +149,8 @@ class Model {
             for (let data in this.element.dataset)
                 this[data] = PunkUtils.parse(this.element.dataset[data]);
 
-        for (let field of document.querySelectorAll('[data-model^="' + this.name + '."]')) {
-            let fieldName = field.getAttribute('data-model').replace(this.name + '.', '');
+        for (let field of document.querySelectorAll('[data-model^="' + this.modelName + '."]')) {
+            let fieldName = field.getAttribute('data-model').replace(this.modelName + '.', '');
             this[fieldName] = PunkUtils.parse(field.innerHTML);
             if (!this.elements[fieldName])
                 this.elements[fieldName] = [];
@@ -200,11 +200,11 @@ class PunkArray extends Array {
 
 class List extends PunkArray {
 
-    constructor(name, methods) {
+    constructor(listName, methods) {
 
         super();
 
-        this.name = name;
+        this.listName = listName;
 
         for (let method in methods) {
             this[method] = methods[method];
@@ -218,7 +218,7 @@ class List extends PunkArray {
 
     init() {
 
-        for (let element of document.querySelectorAll('[data-list="' + this.name + '"]')) {
+        for (let element of document.querySelectorAll('[data-list="' + this.listName + '"]')) {
             this.add(element);
         }
 
@@ -228,8 +228,8 @@ class List extends PunkArray {
         let item = {element: element, fields: {}}
         for (let data in element.dataset)
             item[data] = PunkUtils.parse(element.dataset[data]);
-        for (let field of element.querySelectorAll('[data-list^="' + this.name + '."]')) {
-            let fieldName = field.getAttribute('data-list').replace(this.name + '.', '');
+        for (let field of element.querySelectorAll('[data-list^="' + this.listName + '."]')) {
+            let fieldName = field.getAttribute('data-list').replace(this.listName + '.', '');
             item[fieldName] = PunkUtils.parse(field.innerHTML);
             if (!item.fields[fieldName])
                 item.fields[fieldName] = [];
@@ -248,7 +248,7 @@ class List extends PunkArray {
                             field.innerHTML = value;
                     }
                 }
-                this[obj.name] = obj;
+                this[obj.listName] = obj;
                 for (let attribute of Punk.attributes) {
                     for (let element of obj[attribute])
                         element[attribute] = eval(element.getAttribute('data-' + attribute)) ? true : false;

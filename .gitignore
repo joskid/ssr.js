@@ -1,5 +1,8 @@
 # 1. https://github.com/github/gitignore/blob/master/Global/macOS.gitignore # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
+# Custom
+punk.html
+
 # General
 .DS_Store
 .AppleDouble
