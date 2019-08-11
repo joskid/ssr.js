@@ -1,6 +1,6 @@
 const PunkUtils = new class {
 
-    parse(string) {
+    parseJSON(string) {
         string = string.trim();
         try {
             let json = JSON.parse(string);
@@ -17,6 +17,16 @@ const PunkUtils = new class {
             return false;
         } else {
             return string;
+        }
+    }
+
+    parse(value, type) {
+        if (type == 'number') {
+            return Number(value)
+        } else if (type == 'boolean') {
+            return value == 'true'
+        } else if (type == 'string') {
+            return value
         }
     }
 
@@ -52,7 +62,7 @@ const Punk = new class {
     setInfluencers(scope, affecteds, attribute, properties, type, name, id) {
         for (let affected of affecteds) {
             let condition = affected.getAttribute('data-' + attribute);
-            for (let property of properties) {
+            for (let property in properties) {
                 let variable = new RegExp('\\b' + scope + '\\.' + property + '\\b');
                 if (variable.test(condition)) {
                     if (!this.influencers[type][name]) this.influencers[type][name] = {};
@@ -87,11 +97,13 @@ const Punk = new class {
 
         model.elements = {};
 
-        for (let property of properties) {
+        for (let property in properties) {
+
+            let variableType = properties[property]
 
             if (model.element)
                 for (let property in model.element.dataset)
-                    model[property] = PunkUtils.parse(model.element.dataset[property]);
+                    model[property] = PunkUtils.parse(model.element.dataset[property], variableType);
 
             if (type == 'list') {
                 model.elements[property] = PunkUtils.sub(model.element, `[data-list="scope.${property}"]`, `:scope ${this.li} [data-list="scope.${property}"]`);
@@ -113,10 +125,10 @@ const Punk = new class {
                         } else if (element.type == 'select-multiple') {
                             model[property] = [...element.options].filter(x => x.selected).map(x => x.value);
                         } else {
-                            model[property] = element.value;
+                            model[property] = PunkUtils.parse(element.value, variableType);
                         }
                     } else {
-                        model[property] = element.innerHTML;
+                        model[property] = PunkUtils.parse(element.innerHTML, variableType);
                     }
                 }
             }
@@ -267,6 +279,7 @@ class List extends QuerySet {
 
 }
 
+// Прибраться в старых версиях и зарелизить, сделать -1.0.0
 // Догрузки
 // Перегрузки
 // Не идти в Punk.add если ничего не найдено
