@@ -1,4 +1,4 @@
-const PunkUtils = new class {
+const SSRUtils = new class {
 
     parseJSON(string) {
         string = string.trim();
@@ -43,7 +43,7 @@ const PunkUtils = new class {
 
 }
 
-const Punk = new class {
+const SSR = new class {
 
     constructor() {
 
@@ -80,13 +80,13 @@ const Punk = new class {
         let depth = 0;
         let loop = root => {
             let scope = 'scope' + '\\.[\\w$]+'.repeat(depth);
-            let affecteds = PunkUtils.sub(root, `[data-${attribute}]`, `:scope ${this.li} [data-${attribute}]`);
+            let affecteds = SSRUtils.sub(root, `[data-${attribute}]`, `:scope ${this.li} [data-${attribute}]`);
             this.setInfluencers(scope, affecteds, attribute, properties, type, name, model.id);
             for (let affected of affecteds)
                 affected.PUNKSCOPE = model;
             if (root.querySelectorAll(`${this.li}`).length) {
                 depth++;
-                for (let list of PunkUtils.sub(root, `${this.li}`, `:scope ${this.li} ${this.li}`))
+                for (let list of SSRUtils.sub(root, `${this.li}`, `:scope ${this.li} ${this.li}`))
                     loop(list);
             }
         }
@@ -103,10 +103,10 @@ const Punk = new class {
 
             if (model.element)
                 for (let property in model.element.dataset)
-                    model[property] = PunkUtils.parse(model.element.dataset[property], variableType);
+                    model[property] = SSRUtils.parse(model.element.dataset[property], variableType);
 
             if (type == 'list') {
-                model.elements[property] = PunkUtils.sub(model.element, `[data-list="scope.${property}"]`, `:scope ${this.li} [data-list="scope.${property}"]`);
+                model.elements[property] = SSRUtils.sub(model.element, `[data-list="scope.${property}"]`, `:scope ${this.li} [data-list="scope.${property}"]`);
             } else {
                 model.elements[property] = document.querySelectorAll(`[data-model="${name}.${property}"]`);
             }
@@ -125,10 +125,10 @@ const Punk = new class {
                         } else if (element.type == 'select-multiple') {
                             model[property] = [...element.options].filter(x => x.selected).map(x => x.value);
                         } else {
-                            model[property] = PunkUtils.parse(element.value, variableType);
+                            model[property] = SSRUtils.parse(element.value, variableType);
                         }
                     } else {
-                        model[property] = PunkUtils.parse(element.innerHTML, variableType);
+                        model[property] = SSRUtils.parse(element.innerHTML, variableType);
                     }
                 }
             }
@@ -169,8 +169,8 @@ const Punk = new class {
                         }
                     }
                 }
-                if (Punk.influencers[type][name])
-                    Punk.draw(type, name, property, value, type == 'list' ? model : null);
+                if (SSR.influencers[type][name])
+                    SSR.draw(type, name, property, value, type == 'list' ? model : null);
                 return true;
             }
         });
@@ -262,7 +262,7 @@ class Model {
         for (let method in methods)
             this[method] = methods[method];
         this.element = document.querySelector('[data-model="' + name + '"]');
-        return Punk.add(name, properties, this, 'model');
+        return SSR.add(name, properties, this, 'model');
     }
 
 }
@@ -274,12 +274,7 @@ class List extends QuerySet {
         for (let method in methods)
             this[method] = methods[method];
         for (let element of document.querySelectorAll('[data-list="' + name + '"]'))
-            this.push(Punk.add(name, properties, {element: element}, 'list'));
+            this.push(SSR.add(name, properties, {element: element}, 'list'));
     }
 
 }
-
-// Прибраться в старых версиях и зарелизить, сделать -1.0.0
-// Догрузки
-// Перегрузки
-// Не идти в Punk.add если ничего не найдено

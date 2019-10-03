@@ -1,7 +1,8 @@
 # 1. https://github.com/github/gitignore/blob/master/Global/macOS.gitignore # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 # Custom
-punk.html
+ssr.html
+todo.txt
 test.html
 trash/
 
