@@ -95,11 +95,14 @@ const SSR = new class {
 
     add(name, properties, model, type) {
 
+        model.types = {};
         model.elements = {};
 
         for (let property in properties) {
 
-            let variableType = properties[property]
+            model.types[property] = properties[property]
+
+            let variableType = model.types[property]
 
             if (model.element)
                 for (let property in model.element.dataset)
@@ -147,7 +150,7 @@ const SSR = new class {
 
         model = new Proxy(model, {
             set(model, property, value) {
-                model[property] = value;
+                model[property] = SSRUtils.parse(value, model.types[property]);;
                 if (model.element && property in model.element.dataset)
                     model.element.dataset[property] = value;
                 if (property in model.elements) {
