@@ -83,7 +83,7 @@ const SSR = new class {
             let affecteds = SSRUtils.sub(root, `[data-${attribute}]`, `:scope ${this.li} [data-${attribute}]`);
             this.setInfluencers(scope, affecteds, attribute, properties, type, name, model.id);
             for (let affected of affecteds)
-                affected.PUNKSCOPE = model;
+                affected.SSRSCOPE = model;
             if (root.querySelectorAll(`${this.li}`).length) {
                 depth++;
                 for (let list of SSRUtils.sub(root, `${this.li}`, `:scope ${this.li} ${this.li}`))
@@ -215,7 +215,7 @@ const SSR = new class {
         let influencer = model ? this.influencers[type][name][model.id] : this.influencers[type][name];
         for (let attribute in influencer[property]) {
             for (let element of influencer[property][attribute]) {
-                let scope = element.PUNKSCOPE;
+                let scope = element.SSRSCOPE;
                 element[attribute] = eval(element.getAttribute('data-' + attribute)) ? true : false;
             }
         }
